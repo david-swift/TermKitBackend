@@ -37,6 +37,7 @@ public struct MenuBar: TermKitSceneElement {
             menus: content.compactMap { $0.container(type: Menu.self, fields: [:]).pointer as? MenuBarItem }
         )
         Task {
+            try await Task.sleep(nanoseconds: 1)
             for element in Application.top.subviews {
                 element.y = .bottom(of: menubar)
             }
