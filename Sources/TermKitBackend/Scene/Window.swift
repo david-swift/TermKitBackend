@@ -52,6 +52,7 @@ public struct Window: TermKitSceneElement {
     /// Update the stored content.
     /// - Parameters:
     ///     - storage: The storage to update.
+    ///     - app: The app storage.
     ///     - updateProperties: Whether to update the view's properties.
     public func update<Storage>(
         _ storage: SceneStorage,
