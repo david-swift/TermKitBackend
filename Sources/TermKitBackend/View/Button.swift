@@ -8,12 +8,15 @@
 import TermKit
 
 /// A simple button widget.
-public struct Button: TermKitWidget {
+public struct Button: TermKitWidget, ButtonContext.Widget, MenuContext.Widget {
 
     /// The button's label.
     var label: String
     /// The action.
     var action: () -> Void
+
+    /// The identifier for the action closure.
+    let actionID = "action"
 
     /// Initialize a button.
     /// - Parameters:
@@ -28,10 +31,22 @@ public struct Button: TermKitWidget {
     /// - Parameters:
     ///     - modifiers: Modify views before being updated.
     ///     - type: The type of the app storage.
-    public func container<Storage>(
+    /// - Returns: The view storage.
+    public func container<Data>(
         modifiers: [(any AnyView) -> any AnyView],
-        type: Storage.Type
-    ) -> ViewStorage where Storage: AppStorage {
+        type: Data.Type
+    ) -> ViewStorage where Data: ViewRenderData {
+        if type == MenuContext.self {
+            let storage = ViewStorage(nil)
+            let menuItem = MenuItem(title: label) {
+                (storage.fields[actionID] as? () -> Void)?()
+            }
+            storage.pointer = menuItem
+            storage.fields[actionID] = action
+            return storage
+        } else if type == ButtonContext.self {
+            return ViewStorage(self)
+        }
         let button = TermKit.Button(label, clicked: action)
         return .init(button)
     }
@@ -42,12 +57,15 @@ public struct Button: TermKitWidget {
     ///     - modifiers: Modify views before being updated
     ///     - updateProperties: Whether to update the view's properties.
     ///     - type: The type of the app storage.
-    public func update<Storage>(
+    public func update<Data>(
         _ storage: ViewStorage,
         modifiers: [(any AnyView) -> any AnyView],
         updateProperties: Bool,
-        type: Storage.Type
-    ) where Storage: AppStorage {
+        type: Data.Type
+    ) where Data: ViewRenderData {
+        if type == MenuContext.self {
+            storage.fields[actionID] = action
+        }
         guard let storage = storage.pointer as? TermKit.Button else {
             return
         }

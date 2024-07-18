@@ -33,16 +33,21 @@ struct TestApp: App {
 
     var menuBar: MenuBar {
         .init {
-            Menu("File") {
-                Button("_About TermKitBackend") {
-                    about.signal()
-                }
-                Button("_Quit") {
-                    app.quit()
-                }
-            }
+            fileMenu
             Menu("_Actions") {
                 Button("_Hello, world!") { }
+            }
+        }
+    }
+
+    @ViewBuilder
+    var fileMenu: Body {
+        Menu("File") {
+            Button("_About TermKitBackend") {
+                about.signal()
+            }
+            Button("_Quit") {
+                app.quit()
             }
         }
     }

@@ -28,10 +28,11 @@ public struct TextField: TermKitWidget {
     /// - Parameters:
     ///     - modifiers: Modify views before being updated.
     ///     - type: The type of the app storage.
-    public func container<Storage>(
+    /// - Returns: The view storage.
+    public func container<Data>(
         modifiers: [(any AnyView) -> any AnyView],
-        type: Storage.Type
-    ) -> ViewStorage where Storage: AppStorage {
+        type: Data.Type
+    ) -> ViewStorage where Data: ViewRenderData {
         let field = TermKit.TextField(text.wrappedValue)
         let storage = ViewStorage(field)
         field.secret = secret
@@ -52,12 +53,12 @@ public struct TextField: TermKitWidget {
     ///     - modifiers: Modify views before being updated
     ///     - updateProperties: Whether to update the view's properties.
     ///     - type: The type of the app storage.
-    public func update<Storage>(
+    public func update<Data>(
         _ storage: ViewStorage,
         modifiers: [(any AnyView) -> any AnyView],
         updateProperties: Bool,
-        type: Storage.Type
-    ) where Storage: AppStorage {
+        type: Data.Type
+    ) where Data: ViewRenderData {
         guard let field = storage.pointer as? TermKit.TextField else {
             return
         }

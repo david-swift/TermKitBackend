@@ -18,8 +18,6 @@ public class TermKitApp: AppStorage {
     /// The wrapper type of the TermKit backend.
     public typealias WrapperType = VStack
 
-    /// The application.
-    public var app: () -> any App
     /// The app storage.
     public var storage: StandardAppStorage = .init()
 
@@ -27,9 +25,7 @@ public class TermKitApp: AppStorage {
     /// - Parameters:
     ///     - id: The identifier.
     ///     - app: The application.
-    public required init(id: String, app: @escaping () -> any App) {
-        self.app = app
-    }
+    public required init(id: String) { }
 
     /// Execute the app.
     /// - Parameter setup: Set the scene elements up.

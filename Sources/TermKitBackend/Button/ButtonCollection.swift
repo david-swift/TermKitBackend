@@ -1,17 +1,15 @@
 //
-//  Menu.swift
+//  ButtonCollection.swift
 //  TermKitBackend
 //
-//  Created by david-swift on 07.07.2024.
+//  Created by david-swift on 18.07.2024.
 //
 
 import TermKit
 
 /// A menu is an item of a ``MenuBar``.
-public struct Menu: MenuContext.Widget {
+public struct ButtonCollection: ButtonContext.Widget, Wrapper {
 
-    /// The menu's label, displayed in the menu bar.
-    var label: String
     /// The content of the menu.
     var content: Body
 
@@ -19,8 +17,7 @@ public struct Menu: MenuContext.Widget {
     /// - Parameters:
     ///     - label: The menu's label, displayed in the menu bar.
     ///     - content: The content of the menu.
-    public init(_ label: String, @ViewBuilder content: () -> Body) {
-        self.label = label
+    public init(@ViewBuilder content: @escaping () -> Body) {
         self.content = content()
     }
 
@@ -33,12 +30,18 @@ public struct Menu: MenuContext.Widget {
         modifiers: [(any AnyView) -> any AnyView],
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
-        let children = content.storages(modifiers: modifiers, type: type)
-        let menu = MenuBarItem(title: label, children: children.compactMap { $0.pointer as? MenuItem })
-        return .init(menu, content: [.mainContent: children])
+        var buttons: [Button] = []
+        for element in content.storages(modifiers: modifiers, type: type) {
+            if let button = element.pointer as? Button {
+                buttons.append(button)
+            } else if let collection = element.pointer as? [Button] {
+                buttons += collection
+            }
+        }
+        return .init(buttons, content: [.mainContent: content.storages(modifiers: modifiers, type: type)])
     }
 
-    /// Update the view storage.
+    /// Update the stored content.
     /// - Parameters:
     ///     - storage: The storage to update.
     ///     - modifiers: Modify the views before updating.
@@ -50,10 +53,7 @@ public struct Menu: MenuContext.Widget {
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
-        guard let storages = storage.content[.mainContent] else {
-            return
-        }
-        content.update(storages, modifiers: modifiers, updateProperties: updateProperties, type: type)
+        // Buttons in dialogs cannot be updated
     }
 
 }

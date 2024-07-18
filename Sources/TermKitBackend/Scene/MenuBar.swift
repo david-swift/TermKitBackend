@@ -13,13 +13,13 @@ public struct MenuBar: TermKitSceneElement {
     /// The identifier of the menu bar.
     public var id: String
     /// The menu bar's content.
-    var content: [Menu]
+    var content: Body
 
     /// Initialize the menu bar.
     /// - Parameters:
     ///     - id: The identifier of the menu bar.
     ///     - content: The menu bar's content.
-    public init(id: String = "main-menu", @Builder<Menu> content: () -> [Menu]) {
+    public init(id: String = "main-menu", @ViewBuilder content: () -> Body) {
         self.id = id
         self.content = content()
     }
@@ -33,8 +33,9 @@ public struct MenuBar: TermKitSceneElement {
     /// The scene storage.
     /// - Parameter app: The app storage.
     public func container<Storage>(app: Storage) -> SceneStorage where Storage: AppStorage {
+        let items = MenuCollection { content }.container(modifiers: [], type: MenuContext.self)
         let menubar = TermKit.MenuBar(
-            menus: content.compactMap { $0.container(type: Menu.self, fields: [:]).pointer as? MenuBarItem }
+            menus: items.pointer as? [TermKit.MenuBarItem] ?? []
         )
         Task {
             try await Task.sleep(nanoseconds: 1)

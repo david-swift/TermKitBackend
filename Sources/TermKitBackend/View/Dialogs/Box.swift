@@ -17,7 +17,7 @@ struct Box: TermKitWidget {
     /// The signal.
     var signal: Signal
     /// The buttons (info box if none).
-    var buttons: [Button]
+    var buttons: Body
     /// The content behind the box.
     var content: AnyView
     /// Whether it is an error box.
@@ -30,16 +30,15 @@ struct Box: TermKitWidget {
     /// - Parameters:
     ///     - modifiers: Modify views before being updated.
     ///     - type: The type of the app storage.
-    func container<Storage>(
+    /// - Returns: The view storage.
+    func container<Data>(
         modifiers: [(any AnyView) -> any AnyView],
-        type: Storage.Type
-    ) -> ViewStorage where Storage: AppStorage {
+        type: Data.Type
+    ) -> ViewStorage where Data: ViewRenderData {
         let storage = ViewStorage(nil)
         let contentStorage = content.storage(modifiers: modifiers, type: type)
         storage.pointer = contentStorage.pointer
-        storage.content = [.mainContent: [contentStorage]]
-        storage.fields[boxButtonsID] = buttons
-        return storage
+        return .init(contentStorage.pointer, content: [.mainContent: [contentStorage]])
     }
 
     /// Update the stored content.
@@ -48,16 +47,18 @@ struct Box: TermKitWidget {
     ///     - modifiers: Modify views before being updated
     ///     - updateProperties: Whether to update the view's properties.
     ///     - type: The type of the app storage.
-    func update<Storage>(
+    func update<Data>(
         _ storage: ViewStorage,
         modifiers: [(any AnyView) -> any AnyView],
         updateProperties: Bool,
-        type: Storage.Type
-    ) where Storage: AppStorage {
+        type: Data.Type
+    ) where Data: ViewRenderData {
         guard let storage = storage.content[.mainContent]?.first else {
             return
         }
         content.updateStorage(storage, modifiers: modifiers, updateProperties: updateProperties, type: type)
+        let buttons = ButtonCollection { self.buttons }
+            .storage(modifiers: modifiers, type: ButtonContext.self).pointer as? [Button] ?? []
         storage.fields[boxButtonsID] = buttons
         if signal.update {
             if buttons.isEmpty {
@@ -89,7 +90,7 @@ extension AnyView {
         _ title: String,
         message: String,
         signal: Signal,
-        @Builder<Button> buttons: @escaping () -> [Button]
+        @ViewBuilder buttons: @escaping () -> Body
     ) -> AnyView {
         Box(title: title, message: message, signal: signal, buttons: buttons(), content: self)
     }
@@ -105,7 +106,7 @@ extension AnyView {
         _ title: String,
         message: String,
         signal: Signal,
-        @Builder<Button> buttons: @escaping () -> [Button]
+        @ViewBuilder buttons: @escaping () -> Body
     ) -> AnyView {
         Box(title: title, message: message, signal: signal, buttons: buttons(), content: self, error: true)
     }

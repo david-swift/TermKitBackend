@@ -40,7 +40,7 @@ public struct Window: TermKitSceneElement {
         let win = TermKit.Window(title)
         win.fill()
         Application.top.addSubview(win)
-        let viewStorage = content.storage(modifiers: [], type: Storage.self)
+        let viewStorage = content.storage(modifiers: [], type: TermKitMainView.self)
         if let pointer = viewStorage.pointer as? TermKit.View {
             win.addSubview(pointer)
         }
@@ -62,7 +62,8 @@ public struct Window: TermKitSceneElement {
         guard let viewStorage = storage.content[.mainContent]?.first else {
             return
         }
-        content.updateStorage(viewStorage, modifiers: [], updateProperties: updateProperties, type: Storage.self)
+        content
+            .updateStorage(viewStorage, modifiers: [], updateProperties: updateProperties, type: TermKitMainView.self)
         Application.refresh()
     }
 
