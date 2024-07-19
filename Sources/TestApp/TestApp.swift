@@ -5,6 +5,7 @@
 //  Created by david-swift on 01.07.2024.
 //
 
+@testable import Meta
 import TermKitBackend
 
 @main
@@ -17,7 +18,6 @@ struct TestApp: App {
     var app: TermKitApp!
 
     var scene: Scene {
-        menuBar
         Window {
             VStack {
                 Demos()
@@ -29,10 +29,7 @@ struct TestApp: App {
             .vcenter()
             .infoBox("About TermKitBackend", message: aboutInfo, signal: about)
         }
-    }
-
-    var menuBar: MenuBar {
-        .init {
+        .menuBar {
             fileMenu
             Menu("_Actions") {
                 Button("_Hello, world!") { }
@@ -86,31 +83,45 @@ struct Demos: View {
 
 }
 
+struct ControlsModel: Model {
+
+    var isOn = false
+    var fraction = 0
+    var text = "Controls"
+
+    var model: ModelData?
+
+    func increaseFraction() {
+        Task { @MainActor in
+            setModel { $0.fraction += 1 }
+        }
+    }
+
+}
+
 struct Controls: View {
 
-    @State private var isOn = false
-    @State private var fraction = 0
-    @State private var text = "Controls"
+    @State private var model = ControlsModel()
 
     var view: Body {
-        Frame(text) {
+        Frame(model.text) {
             HStack {
                 Button("Button (progress)") {
-                    if fraction == 10 {
-                        fraction = 0
+                    if model.fraction == 10 {
+                        model.fraction = 0
                     } else {
-                        fraction += 1
+                        model.increaseFraction()
                     }
                 }
                 Button("Button (text)") {
-                    text = "Hello"
+                    model.text = "Hello"
                 }
             }
             .frame(height: 1)
-            Checkbox(isOn ? "On" : "Off", isOn: $isOn)
-            TextField(text: $text)
-                .secret(isOn)
-            ProgressBar(value: .init(fraction), max: 10)
+            Checkbox(model.isOn ? "On" : "Off", isOn: $model.isOn)
+            TextField(text: $model.text)
+                .secret(model.isOn)
+            ProgressBar(value: .init(model.fraction), max: 10)
         }
         .frame(width: 40, height: 7)
     }

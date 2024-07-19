@@ -67,4 +67,12 @@ public struct Window: TermKitSceneElement {
         Application.refresh()
     }
 
+    /// Add a menubar to the app.
+    /// - Parameter content: The mnu bar's content.
+    @SceneBuilder
+    public func menuBar(@ViewBuilder content: @escaping () -> Body) -> Scene {
+        self
+        MenuBar(content: content)
+    }
+
 }

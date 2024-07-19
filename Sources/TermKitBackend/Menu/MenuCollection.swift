@@ -7,16 +7,14 @@
 
 import TermKit
 
-/// A menu is an item of a ``MenuBar``.
+/// A collection of menus.
 public struct MenuCollection: MenuContext.Widget, Wrapper {
 
-    /// The content of the menu.
+    /// The content of the collection.
     var content: Body
 
     /// Initialize a menu.
-    /// - Parameters:
-    ///     - label: The menu's label, displayed in the menu bar.
-    ///     - content: The content of the menu.
+    /// - Parameter content: The content of the collection.
     public init(@ViewBuilder content: @escaping () -> Body) {
         self.content = content()
     }

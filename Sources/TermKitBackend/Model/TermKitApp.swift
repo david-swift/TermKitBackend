@@ -22,9 +22,7 @@ public class TermKitApp: AppStorage {
     public var storage: StandardAppStorage = .init()
 
     /// Initialize the app storage.
-    /// - Parameters:
-    ///     - id: The identifier.
-    ///     - app: The application.
+    /// - Parameter id: The identifier.
     public required init(id: String) { }
 
     /// Execute the app.
