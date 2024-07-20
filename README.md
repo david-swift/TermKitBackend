@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://david-swift.github.io/termkitbackend/">
+  <a href="https://david-swift.github.io/TermKitBackend/">
   Documentation
   </a>
   ·
@@ -12,7 +12,7 @@
   </a>
 </p>
 
-_TermKitBackend_ is a declarative framework allowing the creation of user interface for the terminal. It works on Linux, macOS and Windows thanks to the [TermKit project](https://github.com/migueldeicaza/TermKit).
+_TermKitBackend_ is a declarative framework allowing the creation of user interface for the terminal. It works on Linux and macOS thanks to the [TermKit project](https://github.com/migueldeicaza/TermKit).
 
 ## Table of Contents
 
@@ -22,14 +22,14 @@ _TermKitBackend_ is a declarative framework allowing the creation of user interf
 
 ## Overview
 
-The declarative approach is based on the [Meta package](https://aparokshaui.github.io/meta/) which can be found on [GitHub](https://github.com/AparokshaUI/Meta).
+The declarative approach is based on the [Meta package](https://aparokshaui.github.io/Meta/) which can be found on [GitHub](https://github.com/AparokshaUI/Meta).
 It is powered by [a fork of TermKit for Swift](https://github.com/david-swift/TermKit).
 
-Detailed information about the declarative approach can be found in the [Meta docs](https://aparokshaui.github.io/meta/). Find the available widgets [here](https://david-swift.github.io/termkitbackend).
+Detailed information about the declarative approach can be found in the [Meta docs](https://aparokshaui.github.io/meta/). Find the available widgets [here](https://david-swift.github.io/TermKitBackend).
 
 ## Usage
 
-Follow the tutorial in the [docs](https://david-swift.github.io/termkitbackend).
+Follow the tutorial in the [docs](https://david-swift.github.io/TermKitBackend).
 
 ## Thanks
 
