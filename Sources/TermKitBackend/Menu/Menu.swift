@@ -8,7 +8,7 @@
 import TermKit
 
 /// A menu is an item of a `MenuBar`.
-public struct Menu: MenuContext.Widget {
+public struct Menu: MenuWidget {
 
     /// The menu's label, displayed in the menu bar.
     var label: String

@@ -8,7 +8,7 @@
 import TermKit
 
 /// A collection of buttons.
-public struct ButtonCollection: ButtonContext.Widget, Wrapper {
+public struct ButtonCollection: ButtonWidget, Wrapper {
 
     /// The content of the collection.
     var content: Body

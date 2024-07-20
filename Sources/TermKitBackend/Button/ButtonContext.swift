@@ -11,11 +11,11 @@ import TermKit
 public enum ButtonContext: ViewRenderData {
 
     /// The type of the widgets.
-    public typealias WidgetType = Widget
+    public typealias WidgetType = ButtonWidget
     /// The wrapper type.
     public typealias WrapperType = ButtonCollection
 
-    /// The type of the widgets.
-    public protocol Widget: Meta.Widget { }
-
 }
+
+/// The type of the widgets.
+public protocol ButtonWidget: Meta.Widget { }

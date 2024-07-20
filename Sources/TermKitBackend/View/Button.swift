@@ -8,7 +8,7 @@
 import TermKit
 
 /// A simple button widget.
-public struct Button: TermKitWidget, ButtonContext.Widget, MenuContext.Widget {
+public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
 
     /// The button's label.
     var label: String

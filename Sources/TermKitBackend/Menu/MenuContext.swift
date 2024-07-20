@@ -11,11 +11,11 @@ import TermKit
 public enum MenuContext: ViewRenderData {
 
     /// The type of the widgets.
-    public typealias WidgetType = Widget
+    public typealias WidgetType = MenuWidget
     /// The wrapper type.
     public typealias WrapperType = MenuCollection
 
-    /// The type of the widgets.
-    public protocol Widget: Meta.Widget { }
-
 }
+
+/// The type of the widgets.
+public protocol MenuWidget: Meta.Widget { }

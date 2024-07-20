@@ -8,7 +8,7 @@
 import TermKit
 
 /// A collection of menus.
-public struct MenuCollection: MenuContext.Widget, Wrapper {
+public struct MenuCollection: MenuWidget, Wrapper {
 
     /// The content of the collection.
     var content: Body
