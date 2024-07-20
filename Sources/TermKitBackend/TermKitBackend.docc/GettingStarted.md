@@ -3,7 +3,7 @@
 Learn how to use the TermKit backend.
 
 Knowledge about the Meta project is required.
-Find more information [here](https://aparokshaui.github.io/meta/).
+Find more information [here](https://aparokshaui.github.io/Meta/).
 
 ## The App
 
