@@ -48,7 +48,7 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
             return ViewStorage(self)
         }
         let button = TermKit.Button(label, clicked: action)
-        return .init(button)
+        return .init(button, state: self)
     }
 
     /// Update the stored content.
@@ -66,12 +66,13 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
         if type == MenuContext.self {
             storage.fields[actionID] = action
         }
-        guard let storage = storage.pointer as? TermKit.Button else {
+        guard let pointer = storage.pointer as? TermKit.Button else {
             return
         }
-        storage.clicked = { _ in action() }
-        if updateProperties {
-            storage.text = label
+        pointer.clicked = { _ in action() }
+        if updateProperties, (storage.previousState as? Self)?.label != label {
+            pointer.text = label
+            storage.previousState = self
         }
     }
 
