@@ -30,10 +30,10 @@ public struct Menu: MenuWidget {
     ///     - type: The type of the views.
     /// - Returns: The view storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
-        let children = content.storages(modifiers: modifiers, type: type)
+        let children = content.storages(data: data, type: type)
         let menu = MenuBarItem(title: label, children: children.compactMap { $0.pointer as? MenuItem })
         return .init(menu, content: [.mainContent: children])
     }
@@ -46,14 +46,14 @@ public struct Menu: MenuWidget {
     ///     - type: The type of the views.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(AnyView) -> AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
         guard let storages = storage.content[.mainContent] else {
             return
         }
-        content.update(storages, modifiers: modifiers, updateProperties: updateProperties, type: type)
+        content.update(storages, data: data, updateProperties: updateProperties, type: type)
     }
 
 }

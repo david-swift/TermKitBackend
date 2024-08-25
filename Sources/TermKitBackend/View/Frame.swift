@@ -30,11 +30,11 @@ public struct Frame: TermKitWidget {
     ///     - type: The type of the app storage.
     /// - Returns: The view storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let frame = TermKit.Frame(label)
-        let subview = view.storage(modifiers: modifiers, type: type)
+        let subview = view.storage(data: data, type: type)
         if let pointer = subview.pointer as? TermKit.View {
             frame.addSubview(pointer)
         }
@@ -49,12 +49,12 @@ public struct Frame: TermKitWidget {
     ///     - type: The type of the app storage.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
         if let storage = storage.content[.mainContent]?.first {
-            view.updateStorage(storage, modifiers: modifiers, updateProperties: updateProperties, type: type)
+            view.updateStorage(storage, data: data, updateProperties: updateProperties, type: type)
         }
         guard let pointer = storage.pointer as? TermKit.Frame,
               updateProperties,

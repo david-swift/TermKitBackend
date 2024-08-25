@@ -24,10 +24,10 @@ public struct ZStack: Wrapper, TermKitWidget {
     ///     - modifiers: Modify views before being updated.
     ///     - type: The type of the app storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
-        let storages = content.reversed().storages(modifiers: modifiers, type: type)
+        let storages = content.reversed().storages(data: data, type: type)
         if storages.count == 1 {
             return .init(storages[0].pointer, content: [.mainContent: storages])
         }
@@ -48,14 +48,14 @@ public struct ZStack: Wrapper, TermKitWidget {
     ///     - type: The type of the app storage.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
         guard let storages = storage.content[.mainContent] else {
             return
         }
-        content.reversed().update(storages, modifiers: modifiers, updateProperties: updateProperties, type: type)
+        content.reversed().update(storages, data: data, updateProperties: updateProperties, type: type)
     }
 
 }

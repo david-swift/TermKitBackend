@@ -25,12 +25,12 @@ public struct MenuCollection: MenuWidget, Wrapper {
     ///     - type: The type of the views.
     /// - Returns: The view storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         var storages: [ViewStorage] = []
         forEachMenu { menu in
-            storages.append(menu.container(modifiers: modifiers, type: type))
+            storages.append(menu.container(data: data, type: type))
         }
         return .init(storages.compactMap { $0.pointer }, content: [.mainContent: storages])
     }
@@ -43,7 +43,7 @@ public struct MenuCollection: MenuWidget, Wrapper {
     ///     - type: The type of the views.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(AnyView) -> AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {

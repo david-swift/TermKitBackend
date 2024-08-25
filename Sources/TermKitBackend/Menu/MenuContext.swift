@@ -14,6 +14,8 @@ public enum MenuContext: ViewRenderData {
     public typealias WidgetType = MenuWidget
     /// The wrapper type.
     public typealias WrapperType = MenuCollection
+    /// The either view type.
+    public typealias EitherViewType = NotUpdatableEitherView
 
 }
 

@@ -30,7 +30,7 @@ public struct Checkbox: TermKitWidget {
     ///     - type: The type of the app storage.
     /// - Returns: The view storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let button = TermKit.Checkbox(label, checked: isOn.wrappedValue)
@@ -48,7 +48,7 @@ public struct Checkbox: TermKitWidget {
     ///     - type: The type of the app storage.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {

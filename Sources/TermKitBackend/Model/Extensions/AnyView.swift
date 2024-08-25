@@ -7,6 +7,7 @@
 
 import TermKit
 
+/// Extend `AnyView`.
 extension AnyView {
 
     /// Set a view's width and height.

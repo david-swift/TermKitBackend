@@ -25,18 +25,18 @@ public struct ButtonCollection: ButtonWidget, Wrapper {
     ///     - type: The type of the views.
     /// - Returns: The view storage.
     public func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         var buttons: [Button] = []
-        for element in content.storages(modifiers: modifiers, type: type) {
+        for element in content.storages(data: data, type: type) {
             if let button = element.pointer as? Button {
                 buttons.append(button)
             } else if let collection = element.pointer as? [Button] {
                 buttons += collection
             }
         }
-        return .init(buttons, content: [.mainContent: content.storages(modifiers: modifiers, type: type)])
+        return .init(buttons, content: [.mainContent: content.storages(data: data, type: type)])
     }
 
     /// Update the stored content.
@@ -47,7 +47,7 @@ public struct ButtonCollection: ButtonWidget, Wrapper {
     ///     - type: The type of the views.
     public func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(AnyView) -> AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {

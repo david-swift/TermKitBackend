@@ -12,7 +12,6 @@ import TermKitBackend
 struct TestApp: App {
 
     @State private var about: Signal = .init()
-    @State private var state = false
 
     let id = "io.github.AparokshaUI.TestApp"
     var app: TermKitApp!

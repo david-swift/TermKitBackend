@@ -33,7 +33,11 @@ struct MenuBar: TermKitSceneElement {
     /// The scene storage.
     /// - Parameter app: The app storage.
     func container<Storage>(app: Storage) -> SceneStorage where Storage: AppStorage {
-        let items = MenuCollection { content }.container(modifiers: [], type: MenuContext.self)
+        let storage = SceneStorage(id: id, pointer: nil) { }
+        let items = MenuCollection { content }.container(
+            data: .init(sceneStorage: storage, appStorage: app),
+            type: MenuContext.self
+        )
         let menubar = TermKit.MenuBar(
             menus: items.pointer as? [TermKit.MenuBarItem] ?? []
         )
@@ -41,9 +45,11 @@ struct MenuBar: TermKitSceneElement {
             element.y = .bottom(of: menubar)
         }
         Application.top.addSubview(menubar)
-        return .init(id: id, pointer: menubar) {
+        storage.pointer = menubar
+        storage.show = {
             menubar.ensureFocus()
         }
+        return storage
     }
 
     /// Update the stored content.

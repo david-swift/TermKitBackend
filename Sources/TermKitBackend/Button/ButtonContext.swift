@@ -14,6 +14,8 @@ public enum ButtonContext: ViewRenderData {
     public typealias WidgetType = ButtonWidget
     /// The wrapper type.
     public typealias WrapperType = ButtonCollection
+    /// The either view type.
+    public typealias EitherViewType = NotUpdatableEitherView
 
 }
 

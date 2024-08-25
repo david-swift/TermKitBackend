@@ -12,5 +12,7 @@ public enum TermKitMainView: ViewRenderData {
     public typealias WidgetType = TermKitWidget
     /// The wrapper type.
     public typealias WrapperType = VStack
+    /// The either view type.
+    public typealias EitherViewType = EitherView
 
 }

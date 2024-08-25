@@ -32,11 +32,11 @@ struct Box: TermKitWidget {
     ///     - type: The type of the app storage.
     /// - Returns: The view storage.
     func container<Data>(
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let storage = ViewStorage(nil)
-        let contentStorage = content.storage(modifiers: modifiers, type: type)
+        let contentStorage = content.storage(data: data, type: type)
         storage.pointer = contentStorage.pointer
         return .init(contentStorage.pointer, content: [.mainContent: [contentStorage]])
     }
@@ -49,16 +49,16 @@ struct Box: TermKitWidget {
     ///     - type: The type of the app storage.
     func update<Data>(
         _ storage: ViewStorage,
-        modifiers: [(any AnyView) -> any AnyView],
+        data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
         guard let storage = storage.content[.mainContent]?.first else {
             return
         }
-        content.updateStorage(storage, modifiers: modifiers, updateProperties: updateProperties, type: type)
+        content.updateStorage(storage, data: data, updateProperties: updateProperties, type: type)
         let buttons = ButtonCollection { self.buttons }
-            .storage(modifiers: modifiers, type: ButtonContext.self).pointer as? [Button] ?? []
+            .storage(data: data, type: ButtonContext.self).pointer as? [Button] ?? []
         storage.fields[boxButtonsID] = buttons
         if signal.update {
             if buttons.isEmpty {
@@ -77,6 +77,7 @@ struct Box: TermKitWidget {
 
 }
 
+/// Extend `AnyView`,
 extension AnyView {
 
     /// Add a query box.
