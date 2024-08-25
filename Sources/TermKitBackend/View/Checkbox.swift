@@ -37,7 +37,7 @@ public struct Checkbox: TermKitWidget {
         button.toggled = { _ in
             isOn.wrappedValue = button.checked
         }
-        return .init(button)
+        return .init(button, state: self)
     }
 
     /// Update the stored content.
@@ -52,13 +52,20 @@ public struct Checkbox: TermKitWidget {
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
-        guard let storage = storage.pointer as? TermKit.Checkbox, updateProperties else {
+        guard let pointer = storage.pointer as? TermKit.Checkbox else {
             return
         }
-        storage.text = label
-        storage.checked = isOn.wrappedValue
-        storage.toggled = { _ in
-            isOn.wrappedValue = storage.checked
+        if updateProperties {
+            if (storage.previousState as? Self)?.label != label {
+                pointer.text = label
+            }
+            if (storage.previousState as? Self)?.isOn.wrappedValue != isOn.wrappedValue {
+                pointer.checked = isOn.wrappedValue
+            }
+            storage.previousState = self
+        }
+        pointer.toggled = { _ in
+            isOn.wrappedValue = pointer.checked
         }
     }
 

@@ -15,6 +15,11 @@ public struct ProgressBar: TermKitWidget {
     /// The maximum value.
     var max: Double
 
+    /// The fraction displayed in the progress bar.
+    var fraction: Float {
+        .init(value / max)
+    }
+
     /// Initialize a progress bar.
     /// - Parameters:
     ///     - value: The current value.
@@ -34,8 +39,8 @@ public struct ProgressBar: TermKitWidget {
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let bar = TermKit.ProgressBar()
-        bar.fraction = .init(value / max)
-        return .init(bar)
+        bar.fraction = fraction
+        return .init(bar, state: self)
     }
 
     /// Update the stored content.
@@ -50,10 +55,13 @@ public struct ProgressBar: TermKitWidget {
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
-        guard let storage = storage.pointer as? TermKit.ProgressBar, updateProperties else {
+        guard let pointer = storage.pointer as? TermKit.ProgressBar,
+              updateProperties,
+              (storage.previousState as? Self)?.fraction != fraction else {
             return
         }
-        storage.fraction = .init(value / max)
+        pointer.fraction = fraction
+        storage.previousState = self
     }
 
 }

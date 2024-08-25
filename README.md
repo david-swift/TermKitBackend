@@ -12,7 +12,7 @@
   </a>
 </p>
 
-_TermKitBackend_ is a declarative framework allowing the creation of user interface for the terminal. It works on Linux, macOS and Windows thanks to the [TermKit project](https://github.com/migueldeicaza/TermKit).
+_TermKitBackend_ is a declarative framework allowing the creation of user interface for the terminal. It works on Linux and macOS thanks to the [TermKit project](https://github.com/migueldeicaza/TermKit).
 
 ## Table of Contents
 

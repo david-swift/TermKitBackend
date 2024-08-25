@@ -29,7 +29,7 @@ public struct Label: TermKitWidget {
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let button = TermKit.Label(label)
-        return .init(button)
+        return .init(button, state: self)
     }
 
     /// Update the stored content.
@@ -44,10 +44,13 @@ public struct Label: TermKitWidget {
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
-        guard let storage = storage.pointer as? TermKit.Label, updateProperties else {
+        guard let pointer = storage.pointer as? TermKit.Label,
+              updateProperties,
+              (storage.previousState as? Self)?.label != label else {
             return
         }
-        storage.text = label
+        pointer.text = label
+        storage.previousState = self
     }
 
 }

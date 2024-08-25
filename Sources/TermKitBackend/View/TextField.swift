@@ -34,15 +34,13 @@ public struct TextField: TermKitWidget {
         type: Data.Type
     ) -> ViewStorage where Data: ViewRenderData {
         let field = TermKit.TextField(text.wrappedValue)
-        let storage = ViewStorage(field)
+        let storage = ViewStorage(field, state: self)
         field.secret = secret
         field.textChanged = { _, _ in
             (storage.fields[closureID] as? () -> Void)?()
         }
         storage.fields[closureID] = {
-            if field.text != text.wrappedValue {
-                text.wrappedValue = field.text
-            }
+            text.wrappedValue = field.text
         }
         return storage
     }
@@ -63,15 +61,16 @@ public struct TextField: TermKitWidget {
             return
         }
         storage.fields[closureID] = {
-            if field.text != text.wrappedValue {
-                text.wrappedValue = field.text
-            }
+            text.wrappedValue = field.text
         }
         if updateProperties {
-            field.secret = secret
+            if (storage.previousState as? Self)?.secret != secret {
+                field.secret = secret
+            }
             if field.text != text.wrappedValue {
                 field.text = text.wrappedValue
             }
+            storage.previousState = self
         }
     }
 

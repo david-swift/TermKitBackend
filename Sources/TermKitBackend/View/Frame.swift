@@ -38,7 +38,7 @@ public struct Frame: TermKitWidget {
         if let pointer = subview.pointer as? TermKit.View {
             frame.addSubview(pointer)
         }
-        return .init(frame, content: [.mainContent: [subview]])
+        return .init(frame, content: [.mainContent: [subview]], state: self)
     }
 
     /// Update the stored content.
@@ -56,10 +56,13 @@ public struct Frame: TermKitWidget {
         if let storage = storage.content[.mainContent]?.first {
             view.updateStorage(storage, modifiers: modifiers, updateProperties: updateProperties, type: type)
         }
-        guard let storage = storage.pointer as? TermKit.Frame, updateProperties else {
+        guard let pointer = storage.pointer as? TermKit.Frame,
+              updateProperties,
+              (storage.previousState as? Self)?.label != label else {
             return
         }
-        storage.title = label
+        pointer.title = label
+        storage.previousState = self
     }
 
 }
