@@ -11,8 +11,18 @@ import TermKit
 public struct TextField: TermKitWidget {
 
     /// The text.
-    var text: Binding<String>
+    @BindingProperty(
+        observe: { pointer, value in
+            pointer.textChanged = { _, _ in
+                value.wrappedValue = pointer.text
+            }
+        },
+        set: { $0.text = $1 },
+        pointer: TermKit.TextField.self
+    )
+    var text: Binding<String> = .constant("")
     /// Whether the text field is secret.
+    @Property(set: { $0.secret = $1 }, pointer: TermKit.TextField.self)
     var secret = false
 
     /// The identifier for the closure.
@@ -24,54 +34,10 @@ public struct TextField: TermKitWidget {
         self.text = text
     }
 
-    /// The view storage.
-    /// - Parameters:
-    ///     - modifiers: Modify views before being updated.
-    ///     - type: The type of the app storage.
-    /// - Returns: The view storage.
-    public func container<Data>(
-        data: WidgetData,
-        type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
-        let field = TermKit.TextField(text.wrappedValue)
-        let storage = ViewStorage(field, state: self)
-        field.secret = secret
-        field.textChanged = { _, _ in
-            (storage.fields[closureID] as? () -> Void)?()
-        }
-        storage.fields[closureID] = {
-            text.wrappedValue = field.text
-        }
-        return storage
-    }
-
-    /// Update the stored content.
-    /// - Parameters:
-    ///     - storage: The storage to update.
-    ///     - modifiers: Modify views before being updated
-    ///     - updateProperties: Whether to update the view's properties.
-    ///     - type: The type of the app storage.
-    public func update<Data>(
-        _ storage: ViewStorage,
-        data: WidgetData,
-        updateProperties: Bool,
-        type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let field = storage.pointer as? TermKit.TextField else {
-            return
-        }
-        storage.fields[closureID] = {
-            text.wrappedValue = field.text
-        }
-        if updateProperties {
-            if (storage.previousState as? Self)?.secret != secret {
-                field.secret = secret
-            }
-            if field.text != text.wrappedValue {
-                field.text = text.wrappedValue
-            }
-            storage.previousState = self
-        }
+    /// Get the widget.
+    /// - Returns: The widget.
+    public func initializeWidget() -> Any {
+        TermKit.TextField(text.wrappedValue)
     }
 
     /// Set whether the text field is secret.

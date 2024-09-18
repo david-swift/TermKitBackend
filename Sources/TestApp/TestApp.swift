@@ -5,7 +5,7 @@
 //  Created by david-swift on 01.07.2024.
 //
 
-@testable import Meta
+import Meta
 import TermKitBackend
 
 @main

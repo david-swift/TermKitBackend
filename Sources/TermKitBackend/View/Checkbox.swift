@@ -11,9 +11,15 @@ import TermKit
 public struct Checkbox: TermKitWidget {
 
     /// The label of the checkbox.
-    var label: String
+    @Property(set: { $0.text = $1 }, pointer: TermKit.Checkbox.self)
+    var label = ""
     /// Whether the checkbox is on.
-    var isOn: Binding<Bool>
+    @BindingProperty(
+        observe: { box, value in box.toggled = { value.wrappedValue = $0.checked } },
+        set: { $0.checked = $1 },
+        pointer: TermKit.Checkbox.self
+    )
+    var isOn: Binding<Bool> = .constant(false)
 
     /// Initialize the checkbox.
     /// - Parameters:
@@ -24,49 +30,10 @@ public struct Checkbox: TermKitWidget {
         self.isOn = isOn
     }
 
-    /// The view storage.
-    /// - Parameters:
-    ///     - modifiers: Modify views before being updated.
-    ///     - type: The type of the app storage.
-    /// - Returns: The view storage.
-    public func container<Data>(
-        data: WidgetData,
-        type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
-        let button = TermKit.Checkbox(label, checked: isOn.wrappedValue)
-        button.toggled = { _ in
-            isOn.wrappedValue = button.checked
-        }
-        return .init(button, state: self)
-    }
-
-    /// Update the stored content.
-    /// - Parameters:
-    ///     - storage: The storage to update.
-    ///     - modifiers: Modify views before being updated
-    ///     - updateProperties: Whether to update the view's properties.
-    ///     - type: The type of the app storage.
-    public func update<Data>(
-        _ storage: ViewStorage,
-        data: WidgetData,
-        updateProperties: Bool,
-        type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let pointer = storage.pointer as? TermKit.Checkbox else {
-            return
-        }
-        if updateProperties {
-            if (storage.previousState as? Self)?.label != label {
-                pointer.text = label
-            }
-            if (storage.previousState as? Self)?.isOn.wrappedValue != isOn.wrappedValue {
-                pointer.checked = isOn.wrappedValue
-            }
-            storage.previousState = self
-        }
-        pointer.toggled = { _ in
-            isOn.wrappedValue = pointer.checked
-        }
+    /// Get the widget.
+    /// - Returns: The widget.
+    public func initializeWidget() -> Any {
+        TermKit.Checkbox(label)
     }
 
 }
