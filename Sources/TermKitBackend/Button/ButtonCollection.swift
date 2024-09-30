@@ -5,7 +5,7 @@
 //  Created by david-swift on 18.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A collection of buttons.
 public struct ButtonCollection: ButtonWidget, Wrapper {
@@ -27,16 +27,16 @@ public struct ButtonCollection: ButtonWidget, Wrapper {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
+    ) async -> ViewStorage where Data: ViewRenderData {
         var buttons: [Button] = []
-        for element in content.storages(data: data, type: type) {
-            if let button = element.pointer as? Button {
+        for element in await content.storages(data: data, type: type) {
+            if let button = await element.pointer as? Button {
                 buttons.append(button)
-            } else if let collection = element.pointer as? [Button] {
+            } else if let collection = await element.pointer as? [Button] {
                 buttons += collection
             }
         }
-        return .init(buttons, content: [.mainContent: content.storages(data: data, type: type)])
+        return await .init(buttons, content: [.mainContent: content.storages(data: data, type: type)])
     }
 
     /// Update the stored content.

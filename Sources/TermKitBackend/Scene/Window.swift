@@ -5,10 +5,10 @@
 //  Created by david-swift on 01.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// The window scene elements holds views.
-public struct Window: TermKitSceneElement {
+public struct Window: TermKitSceneElement, Sendable {
 
     /// The identifier of the window.
     public var id: String
@@ -31,26 +31,30 @@ public struct Window: TermKitSceneElement {
     /// Set up the initial scene storages.
     /// - Parameter app: The app storage.
     public func setupInitialContainers<Storage>(app: Storage) where Storage: AppStorage {
-        app.storage.sceneStorage.append(container(app: app))
+        Task {
+            await app.appendScene(container(app: app))
+        }
     }
 
     /// The scene storage.
     /// - Parameter app: The app storage.
     public func container<Storage>(app: Storage) -> SceneStorage where Storage: AppStorage {
         let win = TermKit.Window(title)
-        win.fill()
-        Application.top.addSubview(win)
         let storage = SceneStorage(id: id, pointer: win) {
             win.ensureFocus()
         }
-        let viewStorage = content.storage(
-            data: .init(sceneStorage: storage, appStorage: app),
-            type: TermKitMainView.self
-        )
-        if let pointer = viewStorage.pointer as? TermKit.View {
-            win.addSubview(pointer)
+        win.fill()
+        Application.top.addSubview(win)
+        Task {
+            let viewStorage = await content.storage(
+                data: .init(sceneStorage: storage, appStorage: app),
+                type: TermKitMainView.self
+            )
+            if let pointer = await viewStorage.pointer as? TermKit.View {
+                win.addSubview(pointer)
+            }
+            await storage.setContent(key: .mainContent, value: [viewStorage])
         }
-        storage.content = [.mainContent: [viewStorage]]
         return storage
     }
 
@@ -64,17 +68,21 @@ public struct Window: TermKitSceneElement {
         app: Storage,
         updateProperties: Bool
     ) where Storage: AppStorage {
-        guard let viewStorage = storage.content[.mainContent]?.first else {
-            return
+        Task {
+            guard let viewStorage = await storage.getContent(key: .mainContent).first else {
+                return
+            }
+            await content
+                .updateStorage(
+                    viewStorage,
+                    data: .init(sceneStorage: storage, appStorage: app),
+                    updateProperties: updateProperties,
+                    type: TermKitMainView.self
+                )
+            Task { @MainActor in
+                Application.refresh()
+            }
         }
-        content
-            .updateStorage(
-                viewStorage,
-                data: .init(sceneStorage: storage, appStorage: app),
-                updateProperties: updateProperties,
-                type: TermKitMainView.self
-            )
-        Application.refresh()
     }
 
     /// Add a menubar to the app.

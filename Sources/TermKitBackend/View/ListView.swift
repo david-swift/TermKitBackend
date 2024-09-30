@@ -5,21 +5,21 @@
 //  Created by david-swift on 06.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A list view contains multiple clickable rows.
-public struct ListView<Element>: TermKitWidget where Element: CustomStringConvertible {
+public struct ListView<Element>: TermKitWidget where Element: CustomStringConvertible, Element: Sendable {
 
     /// The rows.
     var items: [Element]
     /// Execute when a row gets clicked.
-    var activate: (Element) -> Void
+    var activate: @Sendable (Element) -> Void
 
     /// Initialize the list view.
     /// - Parameters:
     ///     - items: The rows.
     ///     - activate: Execute when a row gets clicked.
-    public init(_ items: [Element], activate: @escaping (Element) -> Void = { _ in }) {
+    public init(_ items: [Element], activate: @Sendable @escaping (Element) -> Void = { _ in }) {
         self.items = items
         self.activate = activate
     }
@@ -49,8 +49,8 @@ public struct ListView<Element>: TermKitWidget where Element: CustomStringConver
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let list = storage.pointer as? TermKit.ListView else {
+    ) async where Data: ViewRenderData {
+        guard let list = await storage.pointer as? TermKit.ListView else {
             return
         }
         setClosure(list: list)

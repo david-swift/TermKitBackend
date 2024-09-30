@@ -5,7 +5,7 @@
 //  Created by david-swift on 13.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A collection of menus.
 public struct MenuCollection: MenuWidget, Wrapper {
@@ -27,12 +27,12 @@ public struct MenuCollection: MenuWidget, Wrapper {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
+    ) async -> ViewStorage where Data: ViewRenderData {
         var storages: [ViewStorage] = []
-        forEachMenu { menu in
-            storages.append(menu.container(data: data, type: type))
+        await forEachMenu { menu in
+            await storages.append(menu.container(data: data, type: type))
         }
-        return .init(storages.compactMap { $0.pointer }, content: [.mainContent: storages])
+        return await .init(storages.compactMap { await $0.pointer }, content: [.mainContent: storages])
     }
 
     /// Update the stored content.
@@ -52,15 +52,15 @@ public struct MenuCollection: MenuWidget, Wrapper {
 
     /// Run a function for each menu.
     /// - Parameter closure: The function.
-    func forEachMenu(closure: @escaping (Menu) -> Void) {
+    func forEachMenu(closure: @escaping (Menu) async -> Void) async {
         var index = 0
         for element in content {
             if let menu = element as? Menu {
-                closure(menu)
+                await closure(menu)
                 index += 1
             } else if let collection = element as? [Menu] {
                 for menu in collection {
-                    closure(menu)
+                    await closure(menu)
                     index += 1
                 }
             }

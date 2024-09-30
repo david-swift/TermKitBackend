@@ -5,7 +5,7 @@
 //  Created by david-swift on 10.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A dialog box, either a query, error, or info box.
 struct Box: TermKitWidget {
@@ -34,11 +34,11 @@ struct Box: TermKitWidget {
     func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
+    ) async -> ViewStorage where Data: ViewRenderData {
         let storage = ViewStorage(nil)
-        let contentStorage = content.storage(data: data, type: type)
-        storage.pointer = contentStorage.pointer
-        return .init(contentStorage.pointer, content: [.mainContent: [contentStorage]])
+        let contentStorage = await content.storage(data: data, type: type)
+        await storage.setPointer(contentStorage.pointer)
+        return await .init(contentStorage.pointer, content: [.mainContent: [contentStorage]])
     }
 
     /// Update the stored content.
@@ -52,24 +52,31 @@ struct Box: TermKitWidget {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let storage = storage.content[.mainContent]?.first else {
+    ) async where Data: ViewRenderData {
+        guard let storage = await storage.getContent(key: .mainContent).first else {
             return
         }
-        content.updateStorage(storage, data: data, updateProperties: updateProperties, type: type)
-        let buttons = ButtonCollection { self.buttons }
+        await content.updateStorage(storage, data: data, updateProperties: updateProperties, type: type)
+        let buttons = await ButtonCollection { self.buttons }
             .storage(data: data, type: ButtonContext.self).pointer as? [Button] ?? []
-        storage.fields[boxButtonsID] = buttons
+        await storage.setField(key: boxButtonsID, value: buttons)
+        let labels = await buttons.map { $0.label }
         if signal.update {
-            if buttons.isEmpty {
-                MessageBox.info(title, message: message)
-            } else if error {
-                MessageBox.error(title, message: message, buttons: buttons.map { $0.label }) { selection in
-                    (storage.fields[boxButtonsID] as? [Button])?[safe: selection]?.action()
-                }
-            } else {
-                MessageBox.query(title, message: message, buttons: buttons.map { $0.label }) { selection in
-                    (storage.fields[boxButtonsID] as? [Button])?[safe: selection]?.action()
+            Task { @MainActor in
+                if buttons.isEmpty {
+                    MessageBox.info(title, message: message)
+                } else if error {
+                    MessageBox.error(title, message: message, buttons: labels) { selection in
+                        Task {
+                            await (storage.getField(key: boxButtonsID) as? [Button])?[safe: selection]?.action()
+                        }
+                    }
+                } else {
+                    MessageBox.query(title, message: message, buttons: labels) { selection in
+                        Task {
+                            await (storage.getField(key: boxButtonsID) as? [Button])?[safe: selection]?.action()
+                        }
+                    }
                 }
             }
         }

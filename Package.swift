@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 //
 //  Package.swift
 //  TermKitBackend
@@ -19,7 +19,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/AparokshaUI/Meta", branch: "main"),
+        .package(url: "https://github.com/AparokshaUI/Meta", branch: "swift-6"),
         .package(url: "https://github.com/david-swift/TermKit", branch: "main")
     ],
     targets: [

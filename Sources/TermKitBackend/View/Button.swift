@@ -5,7 +5,7 @@
 //  Created by david-swift on 01.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A simple button widget.
 public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
@@ -13,7 +13,7 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
     /// The button's label.
     var label: String
     /// The action.
-    var action: () -> Void
+    var action: @Sendable () -> Void
 
     /// The identifier for the action closure.
     let actionID = "action"
@@ -22,7 +22,7 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
     /// - Parameters:
     ///     - The button's label.
     ///     - The action.
-    public init(_ label: String, action: @escaping () -> Void) {
+    public init(_ label: String, action: @Sendable @escaping () -> Void) {
         self.label = label
         self.action = action
     }
@@ -35,14 +35,16 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
+    ) async -> ViewStorage where Data: ViewRenderData {
         if type == MenuContext.self {
             let storage = ViewStorage(nil)
             let menuItem = MenuItem(title: label) {
-                (storage.fields[actionID] as? () -> Void)?()
+                Task {
+                    await (storage.getField(key: actionID) as? @Sendable () -> Void)?()
+                }
             }
-            storage.pointer = menuItem
-            storage.fields[actionID] = action
+            await storage.setPointer(menuItem)
+            await storage.setField(key: actionID, value: action)
             return storage
         } else if type == ButtonContext.self {
             return ViewStorage(self)
@@ -62,17 +64,17 @@ public struct Button: TermKitWidget, ButtonWidget, MenuWidget {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
+    ) async where Data: ViewRenderData {
         if type == MenuContext.self {
-            storage.fields[actionID] = action
+            await storage.setField(key: actionID, value: action)
         }
-        guard let pointer = storage.pointer as? TermKit.Button else {
+        guard let pointer = await storage.pointer as? TermKit.Button else {
             return
         }
         pointer.clicked = { _ in action() }
-        if updateProperties, (storage.previousState as? Self)?.label != label {
+        if updateProperties, await (storage.previousState as? Self)?.label != label {
             pointer.text = label
-            storage.previousState = self
+            await storage.setPreviousState(self)
         }
     }
 

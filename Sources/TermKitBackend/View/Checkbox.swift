@@ -5,7 +5,7 @@
 //  Created by david-swift on 07.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A simple checkbox widget.
 public struct Checkbox: TermKitWidget {
@@ -32,7 +32,7 @@ public struct Checkbox: TermKitWidget {
 
     /// Get the widget.
     /// - Returns: The widget.
-    public func initializeWidget() -> Any {
+    public func initializeWidget() -> Sendable {
         TermKit.Checkbox(label)
     }
 

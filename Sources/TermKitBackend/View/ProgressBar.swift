@@ -5,7 +5,7 @@
 //  Created by david-swift on 07.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A simple progress bar view.
 public struct ProgressBar: TermKitWidget {
@@ -24,7 +24,7 @@ public struct ProgressBar: TermKitWidget {
 
     /// Get the widget.
     /// - Returns: The widget.
-    public func initializeWidget() -> Any {
+    public func initializeWidget() -> Sendable {
         TermKit.ProgressBar()
     }
 

@@ -5,7 +5,7 @@
 //  Created by david-swift on 01.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// Arrange multiple views vertically.
 public struct VStack: Wrapper, TermKitWidget {
@@ -26,16 +26,16 @@ public struct VStack: Wrapper, TermKitWidget {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
-        let storages = content.storages(data: data, type: type)
+    ) async -> ViewStorage where Data: ViewRenderData {
+        let storages = await content.storages(data: data, type: type)
         if storages.count == 1 {
-            return .init(storages[0].pointer, content: [.mainContent: storages])
+            return .init(await storages[0].pointer, content: [.mainContent: storages])
         }
         let view = View()
         for (index, storage) in storages.enumerated() {
-            if let pointer = storage.pointer as? TermKit.View {
+            if let pointer = await storage.pointer as? TermKit.View {
                 view.addSubview(pointer)
-                if let previous = (storages[safe: index - 1]?.pointer as? TermKit.View) {
+                if let previous = await (storages[safe: index - 1]?.pointer as? TermKit.View) {
                     pointer.y = .bottom(of: previous)
                 }
             }
@@ -54,11 +54,9 @@ public struct VStack: Wrapper, TermKitWidget {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let storages = storage.content[.mainContent] else {
-            return
-        }
-        content.update(storages, data: data, updateProperties: updateProperties, type: type)
+    ) async where Data: ViewRenderData {
+        let storages = await storage.getContent(key: .mainContent)
+        await content.update(storages, data: data, updateProperties: updateProperties, type: type)
     }
 
 }

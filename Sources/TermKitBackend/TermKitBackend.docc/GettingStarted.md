@@ -10,7 +10,7 @@ Find more information [here](https://aparokshaui.github.io/Meta/).
 Define your app in the following way:
 
 ```swift
-import TermKitBackend
+@preconcurrency import TermKitBackend
 
 @main
 struct TestApp: App {

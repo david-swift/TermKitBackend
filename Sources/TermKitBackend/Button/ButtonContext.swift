@@ -5,7 +5,7 @@
 //  Created by david-swift on 18.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// The menu items view context.
 public enum ButtonContext: ViewRenderData {

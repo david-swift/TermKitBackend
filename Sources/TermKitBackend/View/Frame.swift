@@ -5,7 +5,7 @@
 //  Created by david-swift on 06.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A container which draws a frame around its contents.
 public struct Frame: TermKitWidget {
@@ -28,7 +28,7 @@ public struct Frame: TermKitWidget {
 
     /// Get the widget.
     /// - Returns: The widget.
-    public func initializeWidget() -> Any {
+    public func initializeWidget() -> Sendable {
         TermKit.Frame()
     }
 

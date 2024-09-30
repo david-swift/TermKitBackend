@@ -5,7 +5,7 @@
 //  Created by david-swift on 06.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// Arrange multiple views behind each other.
 public struct ZStack: Wrapper, TermKitWidget {
@@ -26,14 +26,14 @@ public struct ZStack: Wrapper, TermKitWidget {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
-        let storages = content.reversed().storages(data: data, type: type)
+    ) async -> ViewStorage where Data: ViewRenderData {
+        let storages = await content.reversed().storages(data: data, type: type)
         if storages.count == 1 {
-            return .init(storages[0].pointer, content: [.mainContent: storages])
+            return await .init(storages[0].pointer, content: [.mainContent: storages])
         }
         let view = View()
         for storage in storages {
-            if let pointer = storage.pointer as? TermKit.View {
+            if let pointer = await storage.pointer as? TermKit.View {
                 view.addSubview(pointer)
             }
         }
@@ -51,11 +51,9 @@ public struct ZStack: Wrapper, TermKitWidget {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let storages = storage.content[.mainContent] else {
-            return
-        }
-        content.reversed().update(storages, data: data, updateProperties: updateProperties, type: type)
+    ) async where Data: ViewRenderData {
+        let storages = await storage.getContent(key: .mainContent)
+        await content.reversed().update(storages, data: data, updateProperties: updateProperties, type: type)
     }
 
 }

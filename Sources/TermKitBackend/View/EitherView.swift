@@ -5,7 +5,7 @@
 //  Created by david-swift on 25.08.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A container which draws a frame around its contents.
 public struct EitherView: TermKitWidget, Meta.EitherView {
@@ -36,10 +36,10 @@ public struct EitherView: TermKitWidget, Meta.EitherView {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
+    ) async -> ViewStorage where Data: ViewRenderData {
         let view = TermKit.View()
         let storage = ViewStorage(view)
-        update(storage, data: data, updateProperties: true, type: type)
+        await update(storage, data: data, updateProperties: true, type: type)
         return storage
     }
 
@@ -54,25 +54,25 @@ public struct EitherView: TermKitWidget, Meta.EitherView {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let parent = storage.pointer as? TermKit.View else {
+    ) async where Data: ViewRenderData {
+        guard let parent = await storage.pointer as? TermKit.View else {
             return
         }
         let view: TermKit.View?
         let body = condition ? view1 : view2
-        if let content = storage.content[condition.description]?.first {
-            body.updateStorage(content, data: data, updateProperties: updateProperties, type: type)
-            view = content.pointer as? TermKit.View
+        if let content = await storage.getContent(key: condition.description).first {
+            await body.updateStorage(content, data: data, updateProperties: updateProperties, type: type)
+            view = await content.pointer as? TermKit.View
         } else {
-            let content = body.storage(data: data, type: type)
-            storage.content[condition.description] = [content]
-            view = content.pointer as? TermKit.View
+            let content = await body.storage(data: data, type: type)
+            await storage.setContent(key: condition.description, value: [content])
+            view = await content.pointer as? TermKit.View
         }
-        if let view, (storage.previousState as? Self)?.condition != condition {
+        if let view, await (storage.previousState as? Self)?.condition != condition {
             parent.removeAllSubviews()
             parent.addSubview(view)
         }
-        storage.previousState = self
+        await storage.setPreviousState(self)
     }
 
 }

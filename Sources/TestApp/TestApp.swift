@@ -6,7 +6,7 @@
 //
 
 import Meta
-import TermKitBackend
+@preconcurrency import TermKitBackend
 
 @main
 struct TestApp: App {
@@ -91,7 +91,7 @@ struct ControlsModel: Model {
     var model: ModelData?
 
     func increaseFraction() {
-        Task { @MainActor in
+        Task {
             setModel { $0.fraction += 1 }
         }
     }

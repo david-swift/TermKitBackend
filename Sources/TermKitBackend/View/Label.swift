@@ -5,7 +5,7 @@
 //  Created by david-swift on 07.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A simple label view.
 public struct Label: TermKitWidget {
@@ -22,7 +22,7 @@ public struct Label: TermKitWidget {
 
     /// Get the widget.
     /// - Returns: The widget.
-    public func initializeWidget() -> Any {
+    public func initializeWidget() -> Sendable {
         TermKit.Label(label)
     }
 

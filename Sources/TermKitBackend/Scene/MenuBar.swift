@@ -5,7 +5,7 @@
 //  Created by david-swift on 01.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// The menu bar scene element adds a menu bar to the top of the app.
 struct MenuBar: TermKitSceneElement {
@@ -27,27 +27,31 @@ struct MenuBar: TermKitSceneElement {
     /// Set up the initial scene storages.
     /// - Parameter app: The app storage.
     func setupInitialContainers<Storage>(app: Storage) where Storage: AppStorage {
-        app.storage.sceneStorage.append(container(app: app))
+        Task {
+            await app.appendScene(container(app: app))
+        }
     }
 
     /// The scene storage.
     /// - Parameter app: The app storage.
     func container<Storage>(app: Storage) -> SceneStorage where Storage: AppStorage {
         let storage = SceneStorage(id: id, pointer: nil) { }
-        let items = MenuCollection { content }.container(
-            data: .init(sceneStorage: storage, appStorage: app),
-            type: MenuContext.self
-        )
-        let menubar = TermKit.MenuBar(
-            menus: items.pointer as? [TermKit.MenuBarItem] ?? []
-        )
-        for element in Application.top.subviews {
-            element.y = .bottom(of: menubar)
-        }
-        Application.top.addSubview(menubar)
-        storage.pointer = menubar
-        storage.show = {
-            menubar.ensureFocus()
+        Task {
+            let items = await MenuCollection { content }.container(
+                data: .init(sceneStorage: storage, appStorage: app),
+                type: MenuContext.self
+            )
+            let menubar = TermKit.MenuBar(
+                menus: await items.pointer as? [TermKit.MenuBarItem] ?? []
+            )
+            for element in Application.top.subviews {
+                element.y = .bottom(of: menubar)
+            }
+            Application.top.addSubview(menubar)
+            await storage.setPointer(menubar)
+            await storage.setShow {
+                menubar.ensureFocus()
+            }
         }
         return storage
     }
@@ -61,8 +65,6 @@ struct MenuBar: TermKitSceneElement {
         _ storage: SceneStorage,
         app: Storage,
         updateProperties: Bool
-    ) where Storage: AppStorage {
-        Application.refresh()
-    }
+    ) where Storage: AppStorage { }
 
 }

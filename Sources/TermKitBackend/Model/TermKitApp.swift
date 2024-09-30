@@ -6,10 +6,10 @@
 //
 
 @_exported import Meta
-import TermKit
+@preconcurrency import TermKit
 
 /// The Meta app storage for the TermKit backend.
-public class TermKitApp: AppStorage {
+public actor TermKitApp: AppStorage {
 
     /// The scene element type of the TermKit backend.
     public typealias SceneElementType = TermKitSceneElement
@@ -23,18 +23,18 @@ public class TermKitApp: AppStorage {
 
     /// Initialize the app storage.
     /// - Parameter id: The identifier.
-    public required init(id: String) { }
+    public init(id: String) { }
 
     /// Execute the app.
     /// - Parameter setup: Set the scene elements up.
-    public func run(setup: @escaping () -> Void) {
+    nonisolated public func run(setup: @Sendable @escaping () -> Void) {
         Application.prepare()
         setup()
         Application.run()
     }
 
     /// Quit the app.
-    public func quit() {
+    nonisolated public func quit() {
         Application.shutdown()
     }
 

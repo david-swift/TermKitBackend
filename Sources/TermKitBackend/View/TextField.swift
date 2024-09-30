@@ -5,7 +5,7 @@
 //  Created by david-swift on 07.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A simple text field view.
 public struct TextField: TermKitWidget {
@@ -36,7 +36,7 @@ public struct TextField: TermKitWidget {
 
     /// Get the widget.
     /// - Returns: The widget.
-    public func initializeWidget() -> Any {
+    public func initializeWidget() -> Sendable {
         TermKit.TextField(text.wrappedValue)
     }
 

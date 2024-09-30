@@ -5,7 +5,7 @@
 //  Created by david-swift on 07.07.2024.
 //
 
-import TermKit
+@preconcurrency import TermKit
 
 /// A menu is an item of a `MenuBar`.
 public struct Menu: MenuWidget {
@@ -32,9 +32,9 @@ public struct Menu: MenuWidget {
     public func container<Data>(
         data: WidgetData,
         type: Data.Type
-    ) -> ViewStorage where Data: ViewRenderData {
-        let children = content.storages(data: data, type: type)
-        let menu = MenuBarItem(title: label, children: children.compactMap { $0.pointer as? MenuItem })
+    ) async -> ViewStorage where Data: ViewRenderData {
+        let children = await content.storages(data: data, type: type)
+        let menu = await MenuBarItem(title: label, children: children.compactMap { await $0.pointer as? MenuItem })
         return .init(menu, content: [.mainContent: children])
     }
 
@@ -49,11 +49,9 @@ public struct Menu: MenuWidget {
         data: WidgetData,
         updateProperties: Bool,
         type: Data.Type
-    ) where Data: ViewRenderData {
-        guard let storages = storage.content[.mainContent] else {
-            return
-        }
-        content.update(storages, data: data, updateProperties: updateProperties, type: type)
+    ) async where Data: ViewRenderData {
+        let storages = await storage.getContent(key: .mainContent)
+        await content.update(storages, data: data, updateProperties: updateProperties, type: type)
     }
 
 }
