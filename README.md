@@ -1,3 +1,13 @@
+> [!IMPORTANT]  
+>
+> **This project has moved. You can find it [here](https://git.aparoksha.dev/david-swift/term-kit-backend).**
+>
+> The decision is based on [this article](https://sfconservancy.org/GiveUpGitHub/).
+>
+> Thanks to [No GitHub](https://codeberg.org/NoGitHub) for the badge used below.
+>
+> [![No GitHub](https://nogithub.codeberg.page/badge.svg)](https://sfconservancy.org/GiveUpGitHub/)
+
 <p align="center">
   <h1 align="center">TermKitBackend</h1>
 </p>
